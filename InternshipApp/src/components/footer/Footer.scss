@@ -1,0 +1,36 @@
+
+@media (min-width: 768px){
+  .footer-container{
+    background-color: plum;
+    text-align: center;
+    vertical-align: middle;
+    margin-top: 3px;
+  }
+
+  .footer-info{
+    height: 100%;
+
+    p{
+      font-size: small;
+      color: #fff;
+      margin: 0px;
+    }
+
+    a{
+      font-size: small;
+      color:#fff;
+    }
+
+    a:hover {
+      color: $focus-color1;
+      text-decoration: none;
+    }
+  }
+}
+
+@media (max-width: 767px){
+  .footer-container{
+    display: none;
+  }
+
+}

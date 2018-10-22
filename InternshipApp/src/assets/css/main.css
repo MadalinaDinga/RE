@@ -1,0 +1,22 @@
+.list-group a{
+    height: 120px
+}
+.list-group a:hover{
+    background-color:grey
+}
+
+.home_search{
+    margin: 10px;
+}
+.hidden { display:none; }
+.img-rounded{
+    width: 100% !important;
+    height: 150px !important;
+}
+.admin-buttons{
+    display:inline;
+    margin-right:3px;
+}
+button a{
+    color:white !important;
+}
