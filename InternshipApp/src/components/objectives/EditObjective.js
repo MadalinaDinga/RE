@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {NotificationContainer, NotificationManager} from 'react-notifications';
-import AddRemoveImages from "../images/AddRemoveImages";
-import ServiceObjective from './ServiceObjective';
+import AddRemoveImages from "./AddRemoveImages";
 import firebase from '../../config/constants';
 import FileUploader from 'react-firebase-file-uploader';
 
@@ -18,7 +17,7 @@ export default class EditObjective extends Component {
             location: '', // coordoante epntru googlemaps
             address: '', // adresa
             tag_string: '',// utilizat pentru filtrare de exmplu #bar#nightlife#obiective sau #concerct#event
-            note: 0, //nota de la 1 la 5, default 0
+            review: 0, //nota de la 1 la 5, default 0
             profile_image: '',// web link catre imagine
             start_date: '',
             end_date: '',
@@ -49,8 +48,8 @@ export default class EditObjective extends Component {
                         item.address,
                         tag_string:
                         item.tag_string,
-                        note:
-                        item.note,
+                        review:
+                        item.review,
                         profile_image:
                         item.profile_image,
                         start_date:
@@ -79,7 +78,7 @@ export default class EditObjective extends Component {
                 'location': this.state.location,
                 'address': this.state.address,
                 'tag_string': this.state.tag_string,
-                'note': this.state.note,
+                'review': this.state.review,
                 'profile_image': this.state.profile_image
             });
         }else{
@@ -89,7 +88,7 @@ export default class EditObjective extends Component {
                 'location': this.state.location,
                 'address': this.state.address,
                 'tag_string': this.state.tag_string,
-                'note': this.state.note,
+                'review': this.state.review,
                 'profile_image': this.state.profile_image,
                 'start_date': this.state.start_date,
                 'end_date': this.state.end_date,
@@ -154,7 +153,7 @@ export default class EditObjective extends Component {
                               onChange={this.handleChange}/>
                 </div>
                 <div className="form-group">
-                    <label> Tags</label>
+                    <label>Tags</label>
                     <textarea className="form-control" name="tag_string" value={this.state.tag_string}
                               onChange={this.handleChange}/>
                 </div>

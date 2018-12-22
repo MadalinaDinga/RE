@@ -95,7 +95,6 @@ export default class AddRemoveImages extends Component {
 
     render(){
         return(
-
             <DropzoneComponent config={componentConfig}
                                eventHandlers={eventHandlers}
                                djsConfig={djsConfig} />

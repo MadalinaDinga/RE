@@ -5,9 +5,8 @@ import 'bootstrap/dist/css/bootstrap.css'
 import {NotificationContainer, NotificationManager} from 'react-notifications';
 
 import firebase from '../config/constants'
-import {getDatabase, isAdmin, isToVisit} from "./service/UserService";
-import {getUid} from '../helpers/auth'
-
+import {isCompany, isToVisit} from "./api/UserService";
+import {isAuthenticated} from '../auth/authUtils'
 
 export default class Home extends Component {
     constructor() {
@@ -16,20 +15,17 @@ export default class Home extends Component {
             items: [],
             search: '',
             filter: 'all',
-            isAdmin: false
+            isCompany: false
         }
     }
 
-    componentDidMount() {
-        this.setState({
-            isAdmin: isAdmin(getUid())
-        });
-        const itemsRef = firebase.database().ref('items')
+    componentWillMount() {
+        const itemsRef = firebase.database().ref('items');
 
         itemsRef.on('value', (snapshot) => {
-            const items = snapshot.val()
+            const retrievedItems = snapshot.val();
             this.setState({
-                items: Object.keys(items).map(id => ({id, ...items[id]}))
+                items: Object.keys(retrievedItems).map(id => ({id, ...retrievedItems[id]}))
             })
         });
     }
@@ -51,10 +47,9 @@ export default class Home extends Component {
 
         this.setState({items: newItems});
 
-        // stergerea nu se face pe firebase
+        // stergerea nu se face in firebase
         firebase.database().ref('items').child(id).remove();
         NotificationManager.success('Deletion completed', 'Success');
-
     }
 
     filterItems() {
@@ -71,12 +66,12 @@ export default class Home extends Component {
                 if (filter === 'all') return true
                 if (filter === 'events') return item.start_date !== undefined
                 if (filter === 'locations') return item.start_date === undefined
-                if (filter === 'wishlist') return isToVisit(getUid(),item.id)
+                if (filter === 'wishlist') return isToVisit(isAuthenticated(),item.id)
             })
     }
 
     renderSearch() {
-        const {search} = this.state
+        const {search} = this.state;
 
         return (
             <input
@@ -91,29 +86,29 @@ export default class Home extends Component {
     }
 
     renderFilter() {
-        const {filter} = this.state
+        const {filter} = this.state;
 
         return (
             <div className="btn-group" style={{marginBottom: 20}}>
+                <button
+                    className={'btn btn-default' + (filter === 'events' ? ' active' : '')}
+                    onClick={() => this.changeFilter('events')}
+                >
+                    Internships
+                </button>
+                <button
+                    className={'btn btn-default' + (filter === 'locations' ? ' active' : '')}
+                    onClick={() => this.changeFilter('locations')}
+                >
+                    Companies
+                </button>
                 <button
                     className={'btn btn-default' + (filter === 'all' ? ' active' : '')}
                     onClick={() => this.changeFilter('all')}
                 >
                     All
                 </button>
-                <button
-                    className={'btn btn-default' + (filter === 'events' ? ' active' : '')}
-                    onClick={() => this.changeFilter('events')}
-                >
-                    Events
-                </button>
-                <button
-                    className={'btn btn-default' + (filter === 'locations' ? ' active' : '')}
-                    onClick={() => this.changeFilter('locations')}
-                >
-                    Locations
-                </button>
-                {getUid()?
+                {isAuthenticated()?
                 <button
                     className={'btn btn-default' + (filter === '' ? ' active' : '')}
                     onClick={() => this.changeFilter('wishlist')}
@@ -124,9 +119,10 @@ export default class Home extends Component {
         )
     }
 
-    renderItems(isAdmin) {
+    render() {
         const items = this.filterItems();
         const {authed} = this.props;
+        const {isCompany} = this.props;
         return (
             <div className="row justify-content-md-center">
                 {items.map(item => (
@@ -151,7 +147,7 @@ export default class Home extends Component {
                                             </div>
                                         ) : (
                                             <div className="btn-group admin-buttons">
-                                                {isAdmin ? (
+                                                {isCompany ? (
                                                     <span>
                                                         <button className="btn btn-primary"
                                                                 onClick={() => this.deleteRow(item.id)}>
@@ -176,16 +172,6 @@ export default class Home extends Component {
                         </div>
                     </div>
                 ))}
-            </div>
-        )
-    }
-
-    render() {
-        return (
-            <div className="container">
-                {this.renderSearch()}
-                {this.renderFilter()}
-                {this.renderItems(this.state.isAdmin)}
             </div>
         )
     }

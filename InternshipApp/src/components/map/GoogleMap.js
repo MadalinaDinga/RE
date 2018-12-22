@@ -3,8 +3,8 @@ import GoogleMapReact from 'google-map-react';
 import MapDisplayObject from "./MapDisplayObject";
 import firebase from '../../config/constants'
 import 'bootstrap/dist/css/bootstrap.css';
-import {isToVisit} from "../service/UserService";
-import {getUid} from "../../helpers/auth";
+import {isToVisit} from "../api/UserService";
+import {isAuthenticated} from "../../auth/authUtils";
 
 const a = ({text}) => <div>{text}</div>;
 
@@ -111,23 +111,23 @@ class GoogleMap extends Component {
             <div className="btn-group" style={{marginBottom: 20}}>
                 <button
                     className={'btn btn-default active'}
-                    onClick={() => this.changeFilter('all')}
-                >
-                    All
-                </button>
-                <button
-                    className={'btn btn-default active'}
                     onClick={() => this.changeFilter('events')}
                 >
-                    Events
+                    Internships
                 </button>
                 <button
                     className={'btn btn-default active'}
                     onClick={() => this.changeFilter('locations')}
                 >
-                    Locations
+                    Companies
                 </button>
-                {getUid()?
+                <button
+                    className={'btn btn-default active'}
+                    onClick={() => this.changeFilter('all')}
+                >
+                    All
+                </button>
+                {isAuthenticated()?
                 <button
                     className={'btn btn-default active'}
                     onClick={() => this.changeFilter('wishlist')}
@@ -142,20 +142,6 @@ class GoogleMap extends Component {
     render() {
         const K_SIZE = 40;
         let objectives;
-
-        if (this.state.filter === 'all') {
-            objectives = this.state.items.filter(item => item.location).map((item, index) => (
-              <MapDisplayObject
-                text={item.name}
-                lat={this._getLat(item.location)}
-                lng={this._getLng(item.location)}
-                style={this._getStyle(item.tag_string)}
-                id={item.id}
-                image={item.profile_image}
-                key={index}
-              />
-            ));
-        }
 
         if (this.state.filter === 'events') {
             objectives = this.state.items.filter(item => item.start_date && item.location).map((item, index) => (
@@ -187,8 +173,22 @@ class GoogleMap extends Component {
             ));
         }
 
+        if (this.state.filter === 'all') {
+            objectives = this.state.items.filter(item => item.location).map((item, index) => (
+                <MapDisplayObject
+                    text={item.name}
+                    lat={this._getLat(item.location)}
+                    lng={this._getLng(item.location)}
+                    style={this._getStyle(item.tag_string)}
+                    id={item.id}
+                    image={item.profile_image}
+                    key={index}
+                />
+            ));
+        }
+
         if (this.state.filter === 'wishlist') {
-            objectives = this.state.items.filter(item => isToVisit(getUid(),item.id)).map((item, index) => (
+            objectives = this.state.items.filter(item => isToVisit(isAuthenticated(),item.id)).map((item, index) => (
                 <MapDisplayObject
                     text={item.name}
                     lat={this._getLat(item.location)}

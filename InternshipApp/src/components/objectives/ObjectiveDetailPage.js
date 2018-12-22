@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import firebase from '../config/constants';
+import firebase from '../../config/constants';
 import 'bootstrap/dist/css/bootstrap.css';
-import GoogleMap from './map/GoogleMap';
-import {auth, getUid} from "../helpers/auth";
-import {addToVisit, isToVisit, removeToVisit} from "./service/UserService";
+import GoogleMap from '../map/GoogleMap';
+import {registerUser, isAuthenticated} from "../../auth/authUtils";
+import {addToVisit, isToVisit, removeToVisit} from "../api/UserService";
 
 export default class ObjectiveDP extends React.Component {
 
@@ -18,7 +18,7 @@ export default class ObjectiveDP extends React.Component {
             profile_image: '',
             tag_string: '',
             location: '',
-            note: 0,
+            review: 0,
             start: '',
             end: '',
             isToVisit: false,
@@ -30,12 +30,12 @@ export default class ObjectiveDP extends React.Component {
 
     componentDidMount() {
         this.setState({
-            authed: getUid()
-        })
+            isAuth: isAuthenticated()
+        });
 
         firebase.database().ref('items').child(this.props.match.params.id).once('value').then((snapshot) => {
                 let item = snapshot.val();
-            var res = isToVisit(getUid(),snapshot.key);
+            var res = isToVisit(isAuthenticated(),snapshot.key);
                 this.setState({
                     oid: snapshot.key,
                     item: item.id,
@@ -50,8 +50,8 @@ export default class ObjectiveDP extends React.Component {
                     item.address,
                     tag_string:
                     item.tag_string,
-                    note:
-                    item.note,
+                    review:
+                    item.review,
                     profile_image:
                     item.profile_image,
                     start:
@@ -106,14 +106,14 @@ export default class ObjectiveDP extends React.Component {
                             <p><span>Address:</span> {this.state.address}</p>
                             <p><span>Tag:</span> {this.state.tag_string}</p>
                             <p><span>Date: </span>{this.getdate(this.state.start)} - {this.getdate(this.state.end)}</p>
-                            <p><span>Note:</span> {this.state.note}</p>
+                            <p><span>Review:</span> {this.state.review}</p>
                         </div>
                     </div>
                     <div className="row login-register pdetails" style={divStyle}>
                         <p className="pdtitle">Description:</p>
                         <p>{this.state.description}</p>
                     </div>
-                    {this.state.authed != false ? (
+                    {this.state.authed !== false ? (
                         <div className="pbutton">
                             {
                                 !this.state.isToVisit ?
@@ -135,14 +135,14 @@ export default class ObjectiveDP extends React.Component {
                             <h3>{this.state.name}</h3>
                             <p><span>Address:</span> {this.state.address}</p>
                             <p><span>Tag:</span> {this.state.tag_string}</p>
-                            <p><span>Note:</span> {this.state.note}</p>
+                            <p><span>Review:</span> {this.state.review}</p>
                         </div>
                     </div>
                     <div className="row login-register pdetails" style={divStyle}>
                         <p className="pdtitle">Description:</p>
                         <p>{this.state.description}</p>
                     </div>
-                    {this.state.authed != false ? (
+                    {this.state.authed ? (
                         <div className="pbutton">
                             {
                                 !this.state.isToVisit ?

@@ -5,15 +5,16 @@ export function getDatabase() {
     return firebase.database().ref("users")
 }
 
-export function isAdmin(uid) {
+export function isCompany(uid) {
     if(uid === null){
         return false
     }
-    var flag
-    getDatabase().child(uid + "/info/admin").on('value', function (isAdmin) {
-        flag = isAdmin.val();
+
+    var isComp = false;
+    getDatabase().child(uid + "/info/admin").on('value', function (isCompany) {
+        isComp = isCompany.val();
     });
-    return flag;
+    return isComp;
 }
 
 export function addToVisit(uid,oid) {
